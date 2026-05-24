@@ -1,0 +1,19 @@
+{
+  "runId": "run-2026-05-24T020200Z",
+  "repo": "squid",
+  "repoPath": "/agent/repos/squid",
+  "workspaceDir": "/agent/repos/squid",
+  "commit": "f6cc033f30b0214d4a501d7967672446cbf0a654",
+  "startedAt": "2026-05-24T02:10:17Z",
+  "endedAt": "2026-05-24T02:10:18Z",
+  "pipeline": "weekly-substitute-v1",
+  "skipReasons": {
+    "sast": "orchestrate pipeline scripts/cli not deployed in workspace",
+    "orchestrate_post_run": "scripts/cli/orchestrate_post_run.sh not found",
+    "validate_phase_output": "scripts/cli/validate_phase_output.py not found"
+  },
+  "truePositives": {"CRITICAL": 0, "HIGH": 11, "MEDIUM": 0, "LOW": 0},
+  "phasesCompleted": ["pattern_scan", "dependency_audit_partial"],
+  "phasesSkipped": ["sast_cache", "sast_ci", "sast_db", "sast_local", "orchestrate_post_run"],
+  "note": "/audit full pipeline (scripts/cli) not present; lightweight substitute executed."
+}
