@@ -1783,8 +1783,16 @@ idnsALookup(const char *name, IDNSCB * callback, void *data)
 
     if (q->do_searchpath && nd < ndots) {
         q->domain = 0;
+        const char *searchDomain = searchpath[q->domain].domain;
+        const size_t appendLen = 1 + strlen(searchDomain); // "." + search domain
+        if (nameLength + appendLen > NS_MAXDNAME) {
+            debugs(23, DBG_IMPORTANT, "SECURITY ALERT: DNS name too long after searchpath append: '" << name << "'. see access.log for details.");
+            idnsCallbackOnEarlyError(callback, data, "huge name");
+            delete q;
+            return;
+        }
         strcat(q->name, ".");
-        strcat(q->name, searchpath[q->domain].domain);
+        strcat(q->name, searchDomain);
         debugs(78, 3, "idnsALookup: searchpath used for " << q->name);
     }
 
