@@ -2,6 +2,20 @@
 
 Scanned commit: `f6cc033f30b0214d4a501d7967672446cbf0a654`
 
+## High: Heap buffer overflow when appending DNS search path in idnsALookup
+
+**Location:** `src/dns_internal.cc`
+
+**Attacker:** Remote HTTP client whose request triggers DNS resolution.
+
+**Controlled input:** Hostname up to `NS_MAXDNAME` bytes with fewer than `ndots` label separators.
+
+**Attack path:** `idnsALookup` copies a max-length name into `q->name` then `strcat` appends search domain without bounds check.
+
+**Impact:** Heap corruption in Squid worker; potential RCE or DoS.
+
+**Remediation:** Use bounded string concatenation with explicit buffer size checks before appending search domains.
+
 ## Medium: Intercepted Host-header forgery bypasses URL-based http_access rules under default configuration
 
 **Location:** `src/client_side_request.cc`
