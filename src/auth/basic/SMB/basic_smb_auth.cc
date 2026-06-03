@@ -48,6 +48,32 @@ struct SMBDOMAIN {
 struct SMBDOMAIN *firstdom = nullptr;
 struct SMBDOMAIN *lastdom = nullptr;
 
+static bool
+contains_shell_metachars(const char *s)
+{
+    for (; *s; ++s) {
+        switch (*s) {
+        case '$':
+        case '`':
+        case '"':
+        case '\\':
+        case '\n':
+        case '\r':
+        case ';':
+        case '|':
+        case '&':
+        case '>':
+        case '<':
+        case '(':
+        case ')':
+            return true;
+        default:
+            break;
+        }
+    }
+    return false;
+}
+
 /*
  * escape the backslash character, since it has a special meaning
  * to the read command of the bourne shell.
@@ -215,6 +241,10 @@ main(int argc, char *argv[])
             SEND_ERR("");
             continue;
         }
+        if (contains_shell_metachars(user) || contains_shell_metachars(pass)) {
+            SEND_ERR("");
+            continue;
+        }
         if ((p = popen(shcmd, "w")) == nullptr) {
             SEND_ERR("");
             continue;
@@ -225,7 +255,8 @@ main(int argc, char *argv[])
         (void) fprintf(p, "%d\n", dom->nmbcast);
         (void) fprintf(p, "%s\n", dom->authshare);
         (void) fprintf(p, "%s\n", dom->authfile);
-        (void) fprintf(p, "%s\n", user);
+        print_esc(p, user);
+        (void) fputc('\n', p);
         /* the password can contain special characters */
         print_esc(p, pass);
         (void) fputc('\n', p);

@@ -400,14 +400,9 @@ CacheManager::PasswdGet(Mgr::ActionPasswordList * a, const char *action)
 void
 CacheManager::PutCommonResponseHeaders(HttpReply &response, const char *httpOrigin)
 {
-    // Allow cachemgr and other XHR scripts access to our version string
-    if (httpOrigin) {
-        response.header.putExt("Access-Control-Allow-Origin", httpOrigin);
-#if HAVE_AUTH_MODULE_BASIC
-        response.header.putExt("Access-Control-Allow-Credentials", "true");
-#endif
-        response.header.putExt("Access-Control-Expose-Headers", "Server");
-    }
+    // Do not reflect client Origin into CORS headers. Untrusted origins would
+    // otherwise receive credentialed cross-origin reads of cache-manager output.
+    (void)httpOrigin;
 
     HttpHdrCc cc;
     // this is honored by more caches but allows pointless revalidation;
