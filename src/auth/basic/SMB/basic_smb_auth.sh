@@ -29,8 +29,8 @@ read NMBADDR
 read NMBCAST
 read AUTHSHARE
 read AUTHFILE
-read SMBUSER
-read -r SMBPASS
+IFS= read -r SMBUSER
+IFS= read -r SMBPASS
 
 # Find domain controller
 echo "Domain name: $DOMAINNAME"
@@ -66,6 +66,7 @@ echo "Domain controller NETBIOS name: $dcname"
 # Pass password to smbclient through environment. Not really safe.
 # NOTE: this differs from what the smbclient documentation says.
 #       But works when the smbclient documented way does not.
+# basic_smb_auth rejects shell metacharacters in credentials before invoking this script.
 USER="$SMBUSER"
 PASSWD="$SMBPASS"
 export USER
